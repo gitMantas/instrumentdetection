@@ -32,7 +32,12 @@ def load_to_dataframe():
     df_raw = df.copy()
     df_raw['raw_sounds'] = raw_samples
     df_raw['sample_rate'] = sample_rates
-    return (df, df_raw)
+    # Generate instrument dict
+    class_list = set(df.tags)
+    class_list = list(c_list)
+    class_dict =  { i: c_list[i] for i in range(0, len(c_list))}
+    # 
+    return (df, df_raw, class_dict)
 
 def filter_instruments(df, instrument_list={'cel', 'cla', 'flu', 'gac', 'gel', 'org', 'pia', 'sax', 'tru', 'vio', 'voi'}):
     # Takes an instrument list and returns a filtered dataframe 
