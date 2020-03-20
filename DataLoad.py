@@ -29,13 +29,23 @@ def load_to_dataframe():
             corrupted.append(p)
             
     assert len(successful) == len(raw_samples)
+    
+    # Generate instrument dict
+    class_list = set(df.tags)
+    class_list = sorted(list(class_list))
+    class_dict =  { i: class_list[i] for i in range(0, len(class_list))}
+    inverted_dict = dict(map(reversed, class_dict.items()))
+    # Add labels column
+    labels = []
+    for row in df.itertuples():
+        label_number = inverted_dict[row[1]]
+        labels.append(label_number)
+    df['labels'] = labels
+    
+    # Create a copy of a raw table
     df_raw = df.copy()
     df_raw['raw_sounds'] = raw_samples
     df_raw['sample_rate'] = sample_rates
-    # Generate instrument dict
-    class_list = set(df.tags)
-    class_list = list(c_list)
-    class_dict =  { i: c_list[i] for i in range(0, len(c_list))}
     # 
     return (df, df_raw, class_dict)
 
