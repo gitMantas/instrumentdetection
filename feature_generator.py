@@ -46,9 +46,9 @@ def create_features(data, param_file):
         features = MEL_linear(data, srs, hl, fft, n_mel, fmin, fmax)
         features = Scale_0_1(features)
         features = np.expand_dims(features, axis=3) #This adds a channel dimension of 1
-        labels = np.array(data['labels'])
+
     
-    if Transformation == 'FFT_Complex_1':
+    if Transformation == 'FFT_Complex':
         print(desc)
         print('Hop_length: ', hl)
         print('Sampling Rate:', srs)
@@ -56,8 +56,35 @@ def create_features(data, param_file):
         print('Shape of Feature: ', shape)
        
         features = fft_complex(data, srs, hl, fft)
-        labels = np.array(data['labels'])
+        features = complex_2_channels(features)
+        features = Scale_1_1(features)
+
         
+    if Transformation == 'FFT_Absolut':
+        print(desc)
+        print('Hop_length: ', hl)
+        print('Sampling Rate:', srs)
+        print('Fast Fourier Window:', fft)
+        print('Shape of Feature: ', shape)
+       
+        features = fft_complex(data, srs, hl, fft)
+        features = np.abs(features)**2 #Calculaing the Power
+        features = Scale_1_1(features)
+        features = np.expand_dims(features, axis=3) #This adds a channel dimension of 1
+
+        
+        
+    if Transformation == 'Time':
+        print(desc)
+        print('Hop_length: ', hl)
+        print('Sampling Rate:', srs)
+        print('Shape of Feature: ', shape)
+       
+        features = time_only(data, srs)
+        features = np.expand_dims(features, axis=2) #This adds a channel dimension of 1
+        
+        
+    labels = np.array(data['labels'])    
     return features, labels
 
 
@@ -89,11 +116,46 @@ def fft_complex(data, srs, hl, fft):
     return np.array(result)    
     
 
+def complex_2_channels(data):
+    '''Split a complex feature matrix in real and imaginary part and return as 2 channels'''
+    x = data.real
+    y = data.imag
+    z = np.stack((x, y), axis=3)
+    
+    return z
+
+
+def time_only(data, srs_neu):
+    sample_vector = np.array(data['raw_sounds'])
+    rate_vector = np.array(data['sample_rate'])
+
+    result = []
+    
+    for sample , sr in zip(sample_vector, rate_vector):
+        y = librosa.resample(sample, sr, srs_neu)
+        result.append(y)
+        
+    return np.array(result) 
+
+
 
 def Scale_0_1(features):
     ''' Too simple MinMax Scaler'''
     maximum = np.max(features)
     minimum = np.min(features)
     features = (features - minimum) / (maximum - minimum)
+   
+    return features    
+
+
+def Scale_1_1(features):
+    ''' Too simple MinMax Scaler'''
+    maximum = np.max(features)
+    minimum = np.min(features)
+    if maximum >= abs(minimum):
+        scale = maximum
+    else:
+        scale = abs(minimum)
+    features = features / scale
     
     return features    
