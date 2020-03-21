@@ -1,0 +1,1 @@
+{"Description": "Real and imaginary part of FFT in 2 channels, use Leaky_Relu, values between -1 and 1!", "Data": "/home/mirko/Downloads/IRMAS_Raw.pkl", "Transformation": "FFT_Complex", "sampling_rate": 44100, "hop_length": 512, "fft_window": 512, "no_mel_bin": 13, "loudness_normalization": "linear", "fmin": 0.0, "fmax": 11025.0, "length_s": 3, "Input_Dim": [257, 259, 2]}
