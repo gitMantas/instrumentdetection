@@ -53,3 +53,4 @@ def filter_instruments(df, instrument_list={'cel', 'cla', 'flu', 'gac', 'gel', '
     # Takes an instrument list and returns a filtered dataframe 
     df = df[df['tags'].isin(instrument_list)].copy()
     return df
+
