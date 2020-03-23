@@ -33,6 +33,7 @@ def create_features(data, param_file):
     fmin = parameter['fmin']
     fmax = parameter['fmax']
     
+    
     if Transformation == 'MEL_linear':
         print(desc)
         print('Hop_length: ', hl)
@@ -44,6 +45,24 @@ def create_features(data, param_file):
         print('Maximum Frequency: ', fmax )
         
         features = MEL_linear(data, srs, hl, fft, n_mel, fmin, fmax)
+        features = Scale_0_1(features)
+        features = np.expand_dims(features, axis=3) #This adds a channel dimension of 1
+        
+    if Transformation == 'MFCC':
+        n_mfcc = parameter['no_mfcc']
+        dcttype = parameter['dct_type']
+        print(desc)
+        print('Hop_length: ', hl)
+        print('Sampling Rate:', srs)
+        print('Fast Fourier Window:', fft)
+        print('Number of MEL Bins:', n_mel)
+        print('Number of Cepstral Coefficients: ', n_mfcc)
+        print('Typer of discrete cosinus transform: ', dcttype)
+        print('Shape of Feature: ', shape)
+        print('Minimum Frequency: ', fmin )
+        print('Maximum Frequency: ', fmax )
+        
+        features = MEL_Cepstrum_Coeff(data, srs, hl, fft, n_mel, fmin, fmax, n_mfcc, dcttype)
         features = Scale_0_1(features)
         features = np.expand_dims(features, axis=3) #This adds a channel dimension of 1
 
@@ -83,7 +102,7 @@ def create_features(data, param_file):
         features = time_only(data, srs)
         features = np.expand_dims(features, axis=2) #This adds a channel dimension of 1
         
-        
+             
     labels = np.array(data['labels'])    
     return features, labels
 
@@ -99,6 +118,22 @@ def MEL_linear(data, srs, hl, fft, n_mel, fmin, fmax):
         D = np.abs(ft)**2 #Calculaing the Power
         mels = librosa.feature.melspectrogram(S=D, sr=srs, n_mels=n_mel, fmin=fmin, fmax=fmax) # Calculate MEL Spectogramm
         result.append(mels)
+        
+    return np.array(result)
+
+
+def MEL_Cepstrum_Coeff(data, srs, hl, fft, n_mel, fmin, fmax, nmfcc, dcttype):
+    '''Calculate the MEL Spectogramm with given Parameters, returns numpy array'''
+    sample_vector = np.array(data['raw_sounds'])
+    result = []
+    
+    for sample in sample_vector:
+        ft = librosa.stft(sample, hop_length=hl, n_fft = fft, window='hann') #Calculate Fast Fourier Transform
+        D = np.abs(ft)**2 #Calculaing the Power
+        mels = librosa.feature.melspectrogram(S=D, sr=srs, n_mels=n_mel, fmin=fmin, fmax=fmax) # Calculate MEL Spectogramm
+        mels_log = librosa.power_to_db(mels) #Translate Power onto log scale
+        mfccs = librosa.feature.mfcc(S=mels_log, sr=srs, n_mfcc=nmfcc, dct_type=dcttype) #Do PCA / COS Transform
+        result.append(mfccs)
         
     return np.array(result)
 
