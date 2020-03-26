@@ -1,0 +1,1 @@
+{"Description": "Returning only the unmodified time samples, according sampling rate", "Transformation": "Time", "sampling_rate": 22050, "hop_length": 1024, "fft_window": 1024, "no_mel_bin": "", "loudness_normalization": "linear", "fmin": "", "fmax": "", "length_s": 3, "Input_Dim": [66149, 1]}
