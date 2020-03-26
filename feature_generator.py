@@ -11,6 +11,25 @@ from pathlib import Path
 def create_features(data, param_file):
     
     modelstore = Path.cwd() / 'models'
+    featurestore = Path.cwd() / 'features'
+    if not os.path.exists(modelstore):
+        os.makedirs(modelstore)
+    if not os.path.exists(featurestore):
+        os.makedirs(featurestore)
+    
+    label_file = param_file[:-4] + '_label.npy'
+    feature_file = param_file[:-4] + '_features.npy'
+    
+    
+    if Path(featurestore / feature_file).is_file():
+        features = np.load(featurestore / feature_file)
+        labels = np.load(featurestore / label_file)
+        
+        print(param_file)
+        print('Features already calculated, read from disc, ignore parameter file')
+        
+        return features, labels
+        
     if Path(modelstore / param_file).is_file():
 
         with open(modelstore / param_file, 'r') as file:
@@ -103,7 +122,12 @@ def create_features(data, param_file):
         features = np.expand_dims(features, axis=2) #This adds a channel dimension of 1
         
              
-    labels = np.array(data['labels'])    
+    labels = np.array(data['labels'])
+    
+    np.save(featurestore / feature_file, features)
+    np.save(featurestore / label_file, labels)
+    
+    
     return features, labels
 
 
