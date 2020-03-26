@@ -10,15 +10,12 @@ from pathlib import Path
 
 def create_features(data, param_file):
     
-    modelstore = Path.cwd() / 'models'
     featurestore = Path.cwd() / 'features'
-    if not os.path.exists(modelstore):
-        os.makedirs(modelstore)
     if not os.path.exists(featurestore):
         os.makedirs(featurestore)
     
-    label_file = param_file[:-4] + '_label.npy'
     feature_file = param_file[:-4] + '_features.npy'
+    label_file = param_file[:-4] + '_label.npy'
     
     
     if Path(featurestore / feature_file).is_file():
@@ -28,11 +25,11 @@ def create_features(data, param_file):
         print(param_file)
         print('Features already calculated, read from disc, ignore parameter file')
         
-        return features, labels
+        return features, labels #Function is dropping out here, if features are already stored on disc
         
-    if Path(modelstore / param_file).is_file():
+    if Path(featurestore / param_file).is_file():
 
-        with open(modelstore / param_file, 'r') as file:
+        with open(featurestore / param_file, 'r') as file:
             parameter = json.load(file)
 
     else:
@@ -66,6 +63,21 @@ def create_features(data, param_file):
         features = MEL_linear(data, srs, hl, fft, n_mel, fmin, fmax)
         features = Scale_0_1(features)
         features = np.expand_dims(features, axis=3) #This adds a channel dimension of 1
+        
+        
+    if Transformation == 'MEL_dB':
+        print(desc)
+        print('Hop_length: ', hl)
+        print('Sampling Rate:', srs)
+        print('Fast Fourier Window:', fft)
+        print('Number of MEL Bins:', n_mel)
+        print('Shape of Feature: ', shape)
+        print('Minimum Frequency: ', fmin )
+        print('Maximum Frequency: ', fmax )
+        
+        S = MEL_linear(data, srs, hl, fft, n_mel, fmin, fmax)
+        features  = librosa.power_to_db(S, ref=np.max)
+        features = np.expand_dims(features, axis=3) #This adds a channel dimension of 1    
         
     if Transformation == 'MFCC':
         n_mfcc = parameter['no_mfcc']
@@ -144,6 +156,7 @@ def MEL_linear(data, srs, hl, fft, n_mel, fmin, fmax):
         result.append(mels)
         
     return np.array(result)
+
 
 
 def MEL_Cepstrum_Coeff(data, srs, hl, fft, n_mel, fmin, fmax, nmfcc, dcttype):
