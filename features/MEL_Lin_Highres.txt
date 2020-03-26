@@ -1,0 +1,1 @@
+{"Description": "Create MEL Bins with linear loudness values", "Transformation": "MEL_linear", "sampling_rate": 44100, "hop_length": 1024, "fft_window": 1024, "no_mel_bin": 128, "loudness_normalization": "linear", "fmin": 0.0, "fmax": 11025.0, "length_s": 3, "Input_Dim": [128, 130, 1]}
