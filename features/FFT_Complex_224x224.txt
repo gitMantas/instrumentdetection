@@ -1,0 +1,1 @@
+{"Description": "Real and imaginary part of FFT in 2 channels, use Leaky_Relu, values between -1 and 1!", "Transformation": "FFT_Complex", "sampling_rate": 44100, "hop_length": 592, "fft_window": 446, "no_mel_bin": "", "loudness_normalization": "linear", "fmin": "", "fmax": "", "length_s": 3, "Input_Dim": [224, 224, 2]}
