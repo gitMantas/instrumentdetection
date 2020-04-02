@@ -525,15 +525,21 @@ def trim_silence2(data, Ignore, top_db):
 
 def to_wav3(data, p, sr=44100):
     '''Helper Function to create various wave files on demand with additional naming'''
-    shutil.rmtree(p, ignore_errors=True)
-    os.makedirs(p)
+    
+    direcs = set(data['directories'])
+    instrument = data.iloc[0].instrument
+    
+    for direc in direcs:
+        if not os.path.exists(p / direc):
+            os.makedirs(p / direc) 
+
     names = set(data['name'])
     for name in names:
         pad = data.loc[data['name'] == name]
         n = 1
         for index, row in pad.iterrows():
             play = row['raw_sounds']
-            librosa.output.write_wav(p/(row['name'] + '_' + str(n) + '.wav'), play, sr)
+            librosa.output.write_wav(p/ row['directories'] / (instrument + '_' + row['name'] + '_' + str(n) + '.wav'), play, sr)
             n += 1
 
 def delete_trash(data, length, top_db):
@@ -623,4 +629,36 @@ def pad_end(data, length):
 
         
     return data
+
+def create_dataframe(p, structure):
+    raw_sounds = []
+    sra = []
+    wav_path = []
+    names = []
+    instruments = []
+    length = []
+    labels = []
+    
+    for index, row in structure.iterrows():
+        p_read = p / row.Directory
+        name = row.Label
+        instrument = row.tags
+        label = row.Label_int
+        for file in os.scandir(p_read):
+            if file.name[-4:] == '.wav':
+                x, sr = librosa.load(file, sr=None)
+                raw_sounds.append(x)
+                sra.append(sr)
+                wav_path.append(p_read / file.name)
+                instruments.append(instrument)
+                names.append(name)
+                length.append(len(x))
+                labels.append(label)
+                
+    output = pd.DataFrame(list(zip(wav_path, raw_sounds, sra, names, instruments, length, labels)),
+                              columns = ['wav_path', 'raw_sounds', 'sample_rate', 'names', 'tags', 'no_samples', 'labels'])
+                
+                
+    return output
+            
     
