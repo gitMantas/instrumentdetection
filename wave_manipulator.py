@@ -661,4 +661,20 @@ def create_dataframe(p, structure):
                 
     return output
             
+def analyze(data):
+
+    tags = set(data.tags)
+
+    count = []
+    labels = []
+    instruments = []
+    for tag in tags:
+        pad = data.loc[data.tags == tag]
+        count.append(len(pad))
+        labels.append(pad.iloc[0]['labels'])
+        instruments.append(tag)
+
+    analyze = pd.DataFrame(list(zip(labels, instruments, count)), columns = ['Label', 'Instrument', 'Nos']) 
+    Label_dict = dict(zip(instruments, labels))
     
+    return analyze, Label_dict   

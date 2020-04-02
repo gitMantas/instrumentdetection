@@ -8,14 +8,15 @@ import math
 import pickle
 from pathlib import Path
 
-def create_features(data, param_file):
+def create_features(data, param_file, suffix=''):
     
     featurestore = Path.cwd() / 'features'
     if not os.path.exists(featurestore):
         os.makedirs(featurestore)
     
-    feature_file = param_file[:-4] + '_features.npy'
-    label_file = param_file[:-4] + '_label.npy'
+
+    feature_file = param_file[:-4] + '_features' + suffix + '.npy'
+    label_file = param_file[:-4] + '_label' + suffix + '.npy'
     
     
     if Path(featurestore / feature_file).is_file():
