@@ -77,7 +77,7 @@ def create_features(data, param_file, suffix=''):
         print('Maximum Frequency: ', fmax )
         
         S = MEL_linear(data, srs, hl, fft, n_mel, fmin, fmax)
-        features  = librosa.power_to_db(S, ref=np.max)
+        features  = librosa.power_to_db(S, ref=np.max)/(-80) #Scale since minimum value is-80, maximum 0
         features = np.expand_dims(features, axis=3) #This adds a channel dimension of 1    
         
     if Transformation == 'MFCC':
@@ -97,6 +97,25 @@ def create_features(data, param_file, suffix=''):
         features = MEL_Cepstrum_Coeff(data, srs, hl, fft, n_mel, fmin, fmax, n_mfcc, dcttype)
         features = Scale_0_1(features)
         features = np.expand_dims(features, axis=3) #This adds a channel dimension of 1
+        
+    if Transformation == 'chroma':
+        n_chroma = parameter['no_chroma']
+        tuning = parameter['chroma_tune']
+        print(desc)
+        print('Hop_length: ', hl)
+        print('Sampling Rate:', srs)
+        print('Fast Fourier Window:', fft)
+        print('Number of Chroma Bins:', n_chroma)
+        print('A440 Tuning: ', tuning)
+        print('Shape of Feature: ', shape)
+        print('Minimum Frequency: ', fmin )
+        print('Maximum Frequency: ', fmax )
+        
+        features = fft_complex(data, srs, hl, fft)
+        features = librosa.feature.chroma_stft(S=features, sr=srs, n_chroma=n_chroma, tuning=tuning)
+        features = Scale_0_1(features)
+        features = np.expand_dims(features, axis=3) #This adds a channel dimension of 1
+
 
     
     if Transformation == 'FFT_Complex':
@@ -120,7 +139,10 @@ def create_features(data, param_file, suffix=''):
        
         features = fft_complex(data, srs, hl, fft)
         features = np.abs(features)**2 #Calculaing the Power
-        features = Scale_1_1(features)
+        if norm == 'linear':
+            features = Scale_0_1(features)
+        elif norm == 'dB':
+            features  = librosa.power_to_db(features, ref=np.max) / (-80) #Scale since minimum value is-80, maximum 0
         features = np.expand_dims(features, axis=3) #This adds a channel dimension of 1
 
         
@@ -186,7 +208,19 @@ def fft_complex(data, srs, hl, fft):
         ft = librosa.stft(sample, hop_length=hl, n_fft = fft, window='hann') #Calculate Fast Fourier Transform
         result.append(ft)
         
+    return np.array(result) 
+
+def chromagram(data, srs, hl, fft):
+    '''Calculate complex fft Transformation in 2 channels'''
+    sample_vector = np.array(data['raw_sounds'])
+    result = []
+    
+    for sample in sample_vector:
+        ft = librosa.stft(sample, hop_length=hl, n_fft = fft, window='hann') #Calculate Fast Fourier Transform
+        result.append(ft)
+        
     return np.array(result)    
+
     
 
 def complex_2_channels(data):
