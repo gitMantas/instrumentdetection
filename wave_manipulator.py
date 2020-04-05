@@ -6,6 +6,8 @@ from pathlib import Path
 import datetime
 import glob
 import shutil
+from audiomentations import Compose, AddGaussianNoise, TimeStretch, PitchShift, Shift
+
 
 
 def create_pathfile(p):
@@ -678,3 +680,23 @@ def analyze(data):
     Label_dict = dict(zip(instruments, labels))
     
     return analyze, Label_dict   
+
+def sound_augmenter(data, augmentation, size=1):
+    sr = augmentation['sr']
+    augmenter = augmentation['augmenter']
+    loudad = augmentation['loudad']
+    min_loud = augmentation['min_loud']
+    max_loud = augmentation['max_loud']
+    new_sounds = []
+    maximum = []
+    pad = data.sample(frac=size)
+    
+    for index, row in pad.iterrows():
+        sample = row['raw_sounds']
+        new_sound = augmenter(samples=sample, sample_rate=sr)
+        if loudad:
+            new_sound = new_sound / np.max(sample) * np.random.uniform(min_loud, max_loud)
+
+        new_sounds.append(new_sound)
+    pad['raw_sounds'] = new_sounds
+    return pad
