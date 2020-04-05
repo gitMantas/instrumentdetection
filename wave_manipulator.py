@@ -682,6 +682,7 @@ def analyze(data):
     return analyze, Label_dict   
 
 def sound_augmenter(data, augmentation, size=1):
+    
     sr = augmentation['sr']
     augmenter = augmentation['augmenter']
     loudad = augmentation['loudad']
@@ -689,14 +690,26 @@ def sound_augmenter(data, augmentation, size=1):
     max_loud = augmentation['max_loud']
     new_sounds = []
     maximum = []
-    pad = data.sample(frac=size)
     
-    for index, row in pad.iterrows():
-        sample = row['raw_sounds']
-        new_sound = augmenter(samples=sample, sample_rate=sr)
-        if loudad:
-            new_sound = new_sound / np.max(sample) * np.random.uniform(min_loud, max_loud)
+    if isinstance(data, pd.DataFrame):
+        pad = data.sample(frac=size)
 
-        new_sounds.append(new_sound)
-    pad['raw_sounds'] = new_sounds
-    return pad
+        for index, row in pad.iterrows():
+            sample = row['raw_sounds']
+            new_sound = augmenter(samples=sample, sample_rate=sr)
+            if loudad:
+                new_sound = new_sound / np.max(sample) * np.random.uniform(min_loud, max_loud)
+
+            new_sounds.append(new_sound)
+        pad['raw_sounds'] = new_sounds
+        augmented = pad
+        
+    if isinstance(data, np.ndarray):
+        new_sound = augmenter(samples=data, sample_rate=sr)
+        if loudad:
+            new_sound = new_sound / np.max(data) * np.random.uniform(min_loud, max_loud)
+
+
+        augmented = new_sound
+        
+    return new_sound
