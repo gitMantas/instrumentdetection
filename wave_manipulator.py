@@ -644,7 +644,8 @@ def create_dataframe(p, structure):
     for index, row in structure.iterrows():
         p_read = p / row.Directory
         name = row.Label
-        instrument = row.tags
+        print(p_read)
+        #instrument = row.tags
         label = row.Label_int
         for file in os.scandir(p_read):
             if file.name[-4:] == '.wav':
@@ -652,26 +653,26 @@ def create_dataframe(p, structure):
                 raw_sounds.append(x)
                 sra.append(sr)
                 wav_path.append(p_read / file.name)
-                instruments.append(instrument)
+                #instruments.append(instrument)
                 names.append(name)
                 length.append(len(x))
                 labels.append(label)
                 
-    output = pd.DataFrame(list(zip(wav_path, raw_sounds, sra, names, instruments, length, labels)),
-                              columns = ['wav_path', 'raw_sounds', 'sample_rate', 'names', 'tags', 'no_samples', 'labels'])
+    output = pd.DataFrame(list(zip(wav_path, raw_sounds, sra, names, length, labels)),
+                              columns = ['wav_path', 'raw_sounds', 'sample_rate', 'names', 'no_samples', 'labels'])
                 
                 
     return output
             
 def analyze(data):
 
-    tags = set(data.tags)
+    tags = set(data.names)
 
     count = []
     labels = []
     instruments = []
     for tag in tags:
-        pad = data.loc[data.tags == tag]
+        pad = data.loc[data.names == tag]
         count.append(len(pad))
         labels.append(pad.iloc[0]['labels'])
         instruments.append(tag)
@@ -713,3 +714,16 @@ def sound_augmenter(data, augmentation, size=1):
         augmented = new_sound
         
     return new_sound
+
+def slicer(audio, sr, hoplength):
+    l_predict = sr * 3 -1
+    hop = int(sr * hoplength)
+    frames = int((len(audio) - l_predict) / hop)
+    inter = []
+    srs = []
+    for frame in range(frames):
+        slices = audio[frame * hop : (frame * hop) + l_predict]
+        inter.append(slices)
+        srs.append(sr)
+    out = pd.DataFrame(list(zip(inter, srs)), columns = ['raw_sounds', 'sample_rate'])  
+    return out
