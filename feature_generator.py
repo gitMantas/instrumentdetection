@@ -428,14 +428,14 @@ def create_feature(data, param_file):
     
     
     if Transformation == 'MEL_linear':
-        print(desc)
-        print('Hop_length: ', hl)
-        print('Sampling Rate:', srs)
-        print('Fast Fourier Window:', fft)
-        print('Number of MEL Bins:', n_mel)
-        print('Shape of Feature: ', shape)
-        print('Minimum Frequency: ', fmin )
-        print('Maximum Frequency: ', fmax )
+      ##  print(desc)
+      #  print('Hop_length: ', hl)
+      #  print('Sampling Rate:', srs)
+      ##  print('Fast Fourier Window:', fft)
+      ##  print('Number of MEL Bins:', n_mel)
+      #  print('Shape of Feature: ', shape)
+      #  print('Minimum Frequency: ', fmin )
+      #  print('Maximum Frequency: ', fmax )
         
         features = MEL_linear(data, srs, hl, fft, n_mel, fmin, fmax)
         features = Scale_0_1(features)
@@ -443,15 +443,15 @@ def create_feature(data, param_file):
         
         
     if Transformation == 'MEL_dB':
-        print(desc)
-        print('Hop_length: ', hl)
-        print('Sampling Rate:', srs)
-        print('Fast Fourier Window:', fft)
-        print('Number of MEL Bins:', n_mel)
-        print('Shape of Feature: ', shape)
-        print('Minimum Frequency: ', fmin )
-        print('Maximum Frequency: ', fmax )
-        print('Content: ', content)
+      #  print(desc)
+      #  print('Hop_length: ', hl)
+      ##  print('Sampling Rate:', srs)
+      #  print('Fast Fourier Window:', fft)
+      #  print('Number of MEL Bins:', n_mel)
+      #  print('Shape of Feature: ', shape)
+      #  print('Minimum Frequency: ', fmin )
+      #  print('Maximum Frequency: ', fmax )
+      #  print('Content: ', content)
         
         S = MEL_linear(data, srs, hl, fft, n_mel, fmin, fmax, content=content)
         features  = librosa.power_to_db(S, ref=np.max)/(-80) #Scale since minimum value is-80, maximum 0
@@ -460,14 +460,14 @@ def create_feature(data, param_file):
         
         
     if Transformation == 'MEL_dB_complex':
-        print(desc)
-        print('Hop_length: ', hl)
-        print('Sampling Rate:', srs)
-        print('Fast Fourier Window:', fft)
-        print('Number of MEL Bins:', n_mel)
-        print('Shape of Feature: ', shape)
-        print('Minimum Frequency: ', fmin )
-        print('Maximum Frequency: ', fmax )
+     #   print(desc)
+     #   print('Hop_length: ', hl)
+     #   print('Sampling Rate:', srs)
+     #   print('Fast Fourier Window:', fft)
+     #   print('Number of MEL Bins:', n_mel)
+     #   print('Shape of Feature: ', shape)
+     #   print('Minimum Frequency: ', fmin )
+     #   print('Maximum Frequency: ', fmax )
         
         S = MEL_linear(data, srs, hl, fft, n_mel, fmin, fmax, compl=True)
         features_x  = librosa.power_to_db(S[0], ref=np.max)/(-80)
@@ -477,16 +477,16 @@ def create_feature(data, param_file):
         
     if Transformation == 'MEL_dB_decompose':
         margin = parameter['margin']
-        print(desc)
-        print('Hop_length: ', hl)
-        print('Sampling Rate:', srs)
-        print('Fast Fourier Window:', fft)
-        print('Number of MEL Bins:', n_mel)
-        print('Shape of Feature: ', shape)
-        print('Minimum Frequency: ', fmin )
-        print('Maximum Frequency: ', fmax )
-        print('Content: ', content)
-        print('Margin: ', margin)
+    #    print(desc)
+    #    print('Hop_length: ', hl)
+    #    print('Sampling Rate:', srs)
+    #    print('Fast Fourier Window:', fft)
+    #    print('Number of MEL Bins:', n_mel)
+    ##    print('Shape of Feature: ', shape)
+    #    print('Minimum Frequency: ', fmin )
+    #    print('Maximum Frequency: ', fmax )
+    #    print('Content: ', content)
+    #    print('Margin: ', margin)
         
         if content == 'decomposed':
             S = MEL_decompose(data, srs, hl, fft, n_mel, fmin, fmax, margin, content)
@@ -507,16 +507,16 @@ def create_feature(data, param_file):
     if Transformation == 'MFCC':
         n_mfcc = parameter['no_mfcc']
         dcttype = parameter['dct_type']
-        print(desc)
-        print('Hop_length: ', hl)
-        print('Sampling Rate:', srs)
-        print('Fast Fourier Window:', fft)
-        print('Number of MEL Bins:', n_mel)
-        print('Number of Cepstral Coefficients: ', n_mfcc)
-        print('Typer of discrete cosinus transform: ', dcttype)
-        print('Shape of Feature: ', shape)
-        print('Minimum Frequency: ', fmin )
-        print('Maximum Frequency: ', fmax )
+      #  print(desc)
+      ##  print('Hop_length: ', hl)
+      #  print('Sampling Rate:', srs)
+      #  print('Fast Fourier Window:', fft)
+      ##  print('Number of MEL Bins:', n_mel)
+      ##  print('Number of Cepstral Coefficients: ', n_mfcc)
+      #  print('Typer of discrete cosinus transform: ', dcttype)
+      #  print('Shape of Feature: ', shape)
+      #  print('Minimum Frequency: ', fmin )
+      #  print('Maximum Frequency: ', fmax )
         
         features = MEL_Cepstrum_Coeff(data, srs, hl, fft, n_mel, fmin, fmax, n_mfcc, dcttype)
         features = Scale_0_1(features)
@@ -526,16 +526,16 @@ def create_feature(data, param_file):
         n_chroma = parameter['no_chroma']
         tuning = parameter['chroma_tune']
         flatten = parameter['flatten']
-        print(desc)
-        print('Hop_length: ', hl)
-        print('Sampling Rate:', srs)
-        print('Fast Fourier Window:', fft)
-        print('Number of Chroma Bins:', n_chroma)
-        print('A440 Tuning: ', tuning)
-        print('Shape of Feature: ', shape)
-        print('Minimum Frequency: ', fmin )
-        print('Maximum Frequency: ', fmax )
-        print('Flatten: ', flatten )
+    #    print(desc)
+     #   print('Hop_length: ', hl)
+     #   print('Sampling Rate:', srs)
+     #   print('Fast Fourier Window:', fft)
+     ##   print('Number of Chroma Bins:', n_chroma)
+      #  print('A440 Tuning: ', tuning)
+     #   print('Shape of Feature: ', shape)
+     #   print('Minimum Frequency: ', fmin )
+     #   print('Maximum Frequency: ', fmax )
+     #   print('Flatten: ', flatten )
         
         features = chromagram(data, srs, hl, fft, n_chroma, tuning, flatten)
         #features = Scale_0_1(features)
@@ -547,11 +547,11 @@ def create_feature(data, param_file):
 
     
     if Transformation == 'FFT_Complex':
-        print(desc)
-        print('Hop_length: ', hl)
-        print('Sampling Rate:', srs)
-        print('Fast Fourier Window:', fft)
-        print('Shape of Feature: ', shape)
+   #     print(desc)
+   #     print('Hop_length: ', hl)
+   #     print('Sampling Rate:', srs)
+   #     print('Fast Fourier Window:', fft)
+   #     print('Shape of Feature: ', shape)
        
         features = fft_complex(data, srs, hl, fft)
         features = complex_2_channels(features)
@@ -559,11 +559,11 @@ def create_feature(data, param_file):
 
         
     if Transformation == 'FFT_Absolut':
-        print(desc)
-        print('Hop_length: ', hl)
-        print('Sampling Rate:', srs)
-        print('Fast Fourier Window:', fft)
-        print('Shape of Feature: ', shape)
+ #       print(desc)
+ #       print('Hop_length: ', hl)
+ #       print('Sampling Rate:', srs)
+ #       print('Fast Fourier Window:', fft)
+ #       print('Shape of Feature: ', shape)
        
         features = fft_complex(data, srs, hl, fft)
         features = np.abs(features)**2 #Calculaing the Power
@@ -576,10 +576,10 @@ def create_feature(data, param_file):
         
         
     if Transformation == 'Time':
-        print(desc)
-        print('Hop_length: ', hl)
-        print('Sampling Rate:', srs)
-        print('Shape of Feature: ', shape)
+ #       print(desc)
+ #       print('Hop_length: ', hl)
+ #       print('Sampling Rate:', srs)
+ #       print('Shape of Feature: ', shape)
        
         features = time_only(data, srs)
 #         features = np.expand_dims(features, axis=2) #This adds a channel dimension of 1
